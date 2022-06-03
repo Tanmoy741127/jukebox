@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jukebox/constants/colors.dart';
+import 'package:jukebox/screens/scanQrScreen.dart';
+import 'package:jukebox/screens/setupServerWebsocket.dart';
 
 import '../widgets/custom_button.dart';
 import '../widgets/icon_rounded_background.dart';
@@ -34,7 +37,7 @@ class _HostGuestChoiceSelectionScreenState
                       Icons.trip_origin,
                       "HOST",
                       "The host plays and controls the music , as well as the guests",
-                      "CREATE"),
+                      "CREATE", onclick: ()=>Get.offAll(()=>SetupServerWebSocket())),
                   const SizedBox(
                     height: 25,
                   ),
@@ -43,7 +46,9 @@ class _HostGuestChoiceSelectionScreenState
                       Icons.speaker,
                       "GUESTS",
                       "Connect to an existing host to play the music controlled by the host",
-                      "JOIN NOW"),
+                      "JOIN NOW", onclick: ()=>{
+                        Get.to(()=>ScanQrScreen())
+                  }),
                 ],
               ),
             ),
@@ -95,7 +100,7 @@ Widget _generateCard(Size size, IconData icon, String title, String description,
         const SizedBox(
           height: 25,
         ),
-        CustomButton(buttonText, size, scale: 0.75)
+        CustomButton(buttonText, size, scale: 0.75, onClick: ()=>onclick!())
       ],
     ),
   );

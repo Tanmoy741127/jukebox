@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:jukebox/screens/acceptCameraPermission.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../constants/colors.dart';
 import '../widgets/custom_button.dart';
@@ -15,6 +18,13 @@ class AcceptLocationPermissionScreen extends StatefulWidget {
 
 class _AcceptLocationPermissionScreenState
     extends State<AcceptLocationPermissionScreen> {
+
+  Future<void> acceptPermission()async{
+    if (await Permission.location.request().isGranted) {
+    Get.offAll(()=>AcceptCameraPermissionScreen());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,7 +61,11 @@ class _AcceptLocationPermissionScreenState
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 85,),
-            CustomButton("ALLOW", MediaQuery.of(context).size)
+            CustomButton("ALLOW", MediaQuery
+                .of(context)
+                .size, onClick:()async{
+              await acceptPermission();
+            })
           ],
         ),
       )),

@@ -5,12 +5,14 @@
 import FlutterMacOS
 import Foundation
 
-import mobile_scanner
+import audio_session
+import just_audio
 import network_info_plus_macos
 import path_provider_macos
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
-  MobileScannerPlugin.register(with: registry.registrar(forPlugin: "MobileScannerPlugin"))
+  AudioSessionPlugin.register(with: registry.registrar(forPlugin: "AudioSessionPlugin"))
+  JustAudioPlugin.register(with: registry.registrar(forPlugin: "JustAudioPlugin"))
   NetworkInfoPlusPlugin.register(with: registry.registrar(forPlugin: "NetworkInfoPlusPlugin"))
   PathProviderPlugin.register(with: registry.registrar(forPlugin: "PathProviderPlugin"))
 }

@@ -8,4 +8,6 @@ class ColorTheme{
   static const iconsColor = Color.fromRGBO(0, 0, 0, 1);
   static const textPrimaryColor = Color.fromRGBO(0, 0, 0, 1);
   static const textSecondaryColor = Color.fromRGBO(52, 52, 52, 1);
+  static const circularSpinnerColor = Color.fromRGBO(0, 0, 0, 1);
+
 }
