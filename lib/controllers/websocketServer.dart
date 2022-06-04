@@ -25,8 +25,8 @@ class WebSocketServerClient extends GetxController{
   }
 
   Future<void> init() async {
-    await musicPlayer.setAudioSourceFromAssets("music.mp3");
-    await musicPlayer.play();
+    // await musicPlayer.setAudioSourceFromAssets("music.mp3");
+    // await musicPlayer.play();
     if(isHostMode){
       await initWebSocketServer();
     }
@@ -48,6 +48,7 @@ class WebSocketServerClient extends GetxController{
   Future<void> startScheduledTasks()async{
     // Send music state and current position
     if(isHostMode){
+      await musicPlayer.loadSongsPlaylist();
       Timer.periodic(const Duration(seconds: 5), (Timer t) =>{
         server?.emit("status", musicPlayer.getStatusJSON())
       });
@@ -73,6 +74,23 @@ class WebSocketServerClient extends GetxController{
   void pauseAndBroadcast(){
     server?.emit("command", "pause");
     musicPlayer.pause();
+  }
+
+  Future<void> setMusicFromPlaylist(int index)async{
+    pauseAndBroadcast();
+    musicPlayer.setMusicFromPlaylist(index);
+    update();
+    playAndBroadcast();
+  }
+
+  Future<void> nextMusic()async{
+    musicPlayer.nextMusic();
+    update();
+  }
+
+  Future<void> previousMusic()async{
+    musicPlayer.previousMusic();
+    update();
   }
 
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:jukebox/constants/colors.dart';
 import 'package:jukebox/screens/acceptCameraPermission.dart';
 import 'package:jukebox/screens/acceptLocationPermission.dart';
 import 'package:jukebox/screens/permissionCheckingScreen.dart';
@@ -31,6 +32,13 @@ class MyApp extends StatelessWidget {
       title: 'Juke Box',
       theme: ThemeData(
         primarySwatch: Colors.grey,
+        sliderTheme: const SliderThemeData(
+          trackHeight: 6,
+          thumbShape: RoundSliderThumbShape(enabledThumbRadius: 10),
+          thumbColor: Colors.redAccent,
+          activeTrackColor: ColorTheme.sliderForegroundColor,
+          inactiveTrackColor: ColorTheme.sliderBackgroundColor,
+        )
       ),
       home: PermissionCheckingScreen(),
     );
