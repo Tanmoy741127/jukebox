@@ -9,6 +9,7 @@ import 'package:jukebox/controllers/musicPlayer.dart';
 import 'package:jukebox/controllers/musicTransferServer.dart';
 import 'package:jukebox/controllers/websocketServer.dart';
 import 'package:jukebox/screens/musicPlayerScreen.dart';
+import 'package:network_info_plus/network_info_plus.dart';
 
 
 class SetupServerWebSocket extends StatefulWidget {
@@ -33,7 +34,9 @@ class _SetupServerWebSocketState extends State<SetupServerWebSocket> {
   Future<void> runFunction()async{
     final musicTransferServerController = Get.put(MusicTransferServer(), permanent: true);
     final musicPlayerController = Get.put(MusicPlayerController(), permanent: true);
-    final webSocketServerController = Get.put(WebSocketServerClient(musicPlayerController, true), permanent: true);
+    final webSocketServerController = Get.put(WebSocketServerClientSystem(musicPlayerController, true), permanent: true);
+    final info = NetworkInfo();
+    webSocketServerController.ipAddress = await info.getWifiIP();
     Get.offAll(()=>MusicPlayerScreen());
   }
 

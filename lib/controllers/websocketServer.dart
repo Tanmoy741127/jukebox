@@ -1,22 +1,29 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:get/get.dart';
+import 'package:uri_to_file/uri_to_file.dart';
 import 'musicPlayer.dart';
 import 'package:socket_io/socket_io.dart';
 import 'package:socket_io_client/socket_io_client.dart' as SocketClient;
 
-class WebSocketServerClient extends GetxController{
+import 'musicTransferServer.dart';
+
+class WebSocketServerClientSystem extends GetxController{
   late MusicPlayerController musicPlayer;
   late bool isHostMode;
   Server? server;
   SocketClient.Socket? socket;
+
+  // Own ip address
+  String ? ipAddress = "192.168.0.100";
 
   // State
   Timer ? playMusicTimer;
 
 
   // Constructor
-  WebSocketServerClient(this.musicPlayer, this.isHostMode);
+  WebSocketServerClientSystem(this.musicPlayer, this.isHostMode);
 
   void onReady(){
     super.onReady();
@@ -79,6 +86,9 @@ class WebSocketServerClient extends GetxController{
   Future<void> setMusicFromPlaylist(int index)async{
     pauseAndBroadcast();
     musicPlayer.setMusicFromPlaylist(index);
+    final musicServer = Get.find<MusicTransferServer>();
+    musicServer.file = await toFile(musicPlayer.currentSongUri??"");
+    musicServer.fileAttached = true;
     update();
     playAndBroadcast();
   }

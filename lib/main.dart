@@ -2,11 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:jukebox/constants/colors.dart';
-import 'package:jukebox/screens/acceptCameraPermission.dart';
-import 'package:jukebox/screens/acceptLocationPermission.dart';
 import 'package:jukebox/screens/permissionCheckingScreen.dart';
-import 'package:jukebox/screens/turnOnWifi.dart';
-import 'package:jukebox/screens/acceptStoragePermission.dart';
 import 'package:jukebox/screens/hostGuestChoiceSelection.dart';
 
 void main() {
@@ -40,7 +36,7 @@ class MyApp extends StatelessWidget {
           inactiveTrackColor: ColorTheme.sliderBackgroundColor,
         )
       ),
-      home: PermissionCheckingScreen(),
+      home: const PermissionCheckingScreen(),
     );
   }
 }

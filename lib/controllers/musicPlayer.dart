@@ -13,6 +13,7 @@ class MusicPlayerController extends GetxController{
   int currentlyPlayingMusicIndex = (-1);
   List<SongModel> songs = [];
   SongModel? currentSong;
+  String? currentSongUri;
 
 
 
@@ -90,7 +91,8 @@ class MusicPlayerController extends GetxController{
     currentSong = songs[index];
     currentlyPlayingMusicId.value = currentSong?.id ?? 0;
     currentlyPlayingMusicIndex = index;
-    setAudioSourceFromUri(currentSong?.uri??"");
+    currentSongUri = currentSong?.uri;
+    setAudioSourceFromUri(currentSongUri??"");
   }
 
   bool nextMusic() {

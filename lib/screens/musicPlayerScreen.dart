@@ -1,11 +1,10 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jukebox/constants/colors.dart';
 import 'package:jukebox/controllers/musicPlayer.dart';
 import 'package:jukebox/screens/musicPlayList.dart';
+import 'package:lottie/lottie.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -19,11 +18,11 @@ class MusicPlayerScreen extends StatelessWidget {
 
   final musicTransferServerController = Get.find<MusicTransferServer>();
   final musicPlayerController = Get.find<MusicPlayerController>();
-  final webSocketServerController = Get.find<WebSocketServerClient>();
+  final webSocketServerController = Get.find<WebSocketServerClientSystem>();
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<WebSocketServerClient>(builder: (controller) {
+    return GetBuilder<WebSocketServerClientSystem>(builder: (controller) {
       return Scaffold(
         appBar: AppBar(
           backgroundColor: ColorTheme.appBarBackgroundColor,
@@ -37,7 +36,16 @@ class MusicPlayerScreen extends StatelessWidget {
             child: Image.asset("assets/logo.png",),
           ),
           actions: [
-            ConnectionStatusWidget(false)
+            !controller.isHostMode ? ConnectionStatusWidget(false) :
+            GestureDetector(
+                onTap: ()=>showModalBottomSheet(
+                    context: context,
+                    builder: (context)=>_dialogContent(controller.ipAddress ?? "Unknown" ),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
+                    ),
+                ),
+                child: ConnectionStatusWidgetForHostMode())
           ],
         ),
         backgroundColor: ColorTheme.backgroundColor,
@@ -48,7 +56,7 @@ class MusicPlayerScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              QueryArtworkWidget(
+               controller.isHostMode ? QueryArtworkWidget(
                 size: (MediaQuery.of(context).size.width * 0.75).toInt(),
                 artworkWidth: MediaQuery.of(context).size.width * 0.75,
                 artworkHeight: MediaQuery.of(context).size.width * 0.75,
@@ -57,7 +65,7 @@ class MusicPlayerScreen extends StatelessWidget {
                 artworkBorder: BorderRadius.circular(10),
                 nullArtworkWidget: nullArtworkCustomWidgetLarge(
                     MediaQuery.of(context).size.width * 0.75),
-              ),
+              ) : Obx(()=>Lottie.asset("assets/listening-music.json", animate: controller.musicPlayer.isPlaying.value, height: MediaQuery.of(context).size.width * 0.75)),
               const SizedBox(
                 height: 15,
               ),
@@ -85,12 +93,12 @@ class MusicPlayerScreen extends StatelessWidget {
               const SizedBox(
                 height: 20,
               ),
-              Row(
+              Obx(()=>Row(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(width: 1,),
+                  const SizedBox(width: 40,),
                   GestureDetector(
                     onTap: (){
                       controller.previousMusic();
@@ -100,19 +108,18 @@ class MusicPlayerScreen extends StatelessWidget {
                       size: 40,
                     ),
                   ),
-                  Obx(()=>GestureDetector(
+                  GestureDetector(
                     onTap: ()=>controller.musicPlayer.isPlaying.value ? controller.pauseAndBroadcast() : controller.playAndBroadcast(),
-                      child: Container(
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: ColorTheme.playPauseButtonBackgroundColor,
-                          borderRadius: BorderRadius.circular(50)
-                        ),
-                        child:  Icon(
-                          controller.musicPlayer.isPlaying.value ? Icons.pause : Icons.play_arrow_rounded,
-                          size: 30,
-                        ),
+                    child: Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: ColorTheme.playPauseButtonBackgroundColor,
+                        borderRadius: BorderRadius.circular(50)
+                      ),
+                      child:  Icon(
+                        controller.musicPlayer.isPlaying.value ? Icons.pause : Icons.play_arrow_rounded,
+                        size: 30,
                       ),
                     ),
                   ),
@@ -129,13 +136,21 @@ class MusicPlayerScreen extends StatelessWidget {
                     onTap: (){
                       Get.to(()=>MusicPlayList(), transition: Transition.rightToLeft);
                     },
-                    child: const Icon(
-                      Icons.queue_music,
-                      size: 30,
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      alignment: Alignment.center,
+                      child: Visibility(
+                        visible: controller.isHostMode,
+                        child: const Icon(
+                          Icons.queue_music,
+                          size: 25,
+                        ),
+                      ),
                     ),
                   )
                 ],
-              )
+              ))
             ],
           ),
         ),
@@ -144,35 +159,50 @@ class MusicPlayerScreen extends StatelessWidget {
   }
 }
 
-Widget _dialogContent() {
+Widget _dialogContent(String ip_address) {
   return Container(
-    width: 300,
-    height: 300,
-    decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
-    alignment: Alignment.center,
-    padding: EdgeInsets.all(10),
+    padding:  const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
     child: Column(
-      mainAxisSize: MainAxisSize.max,
+      mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(
-          "Scan QR to connect",
-          style: GoogleFonts.getFont("Nunito Sans",
-              textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Scan QR to connect",
+              style: GoogleFonts.getFont("Roboto",
+                  textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500)
+              ),
+            ),
+            GestureDetector(
+              onTap: ()=>Get.back(),
+              child: Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    color: ColorTheme.iconBackgroundColor,
+                    borderRadius: BorderRadius.circular(20)
+                ),
+                  child: const Icon(Icons.close_rounded, size: 25,)
+              ),
+            )
+          ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         QrImage(
-          data: "https://192.168.0.100",
+          data: ip_address,
           version: QrVersions.auto,
-          size: 200.0,
+          size: 150.0,
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
-        Text("Running server at 192.168.0.100"),
+        Text("🔥 Running host at $ip_address"),
       ],
     ),
   );

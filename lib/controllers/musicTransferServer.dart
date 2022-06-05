@@ -17,10 +17,6 @@ class MusicTransferServer extends GetxController{
       if(kDebugMode) {
         print("Music transfer server is ready to serve !");
       }
-      attachFileFromAssets("music.mp3")
-      .then((val) => {
-        print("File attached -> $val")
-      });
     });
   }
 

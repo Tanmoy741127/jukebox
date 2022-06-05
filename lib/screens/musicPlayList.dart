@@ -14,7 +14,7 @@ class MusicPlayList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    return GetX<WebSocketServerClient>(
+    return GetX<WebSocketServerClientSystem>(
       builder: (controller) {
         return SafeArea(
           child: Scaffold(
