@@ -16,7 +16,6 @@ import '../widgets/nullArtworkCustomWidget.dart';
 class MusicPlayerScreen extends StatelessWidget {
   MusicPlayerScreen({Key? key}) : super(key: key);
 
-  final musicTransferServerController = Get.find<MusicTransferServer>();
   final musicPlayerController = Get.find<MusicPlayerController>();
   final webSocketServerController = Get.find<WebSocketServerClientSystem>();
 
@@ -36,7 +35,7 @@ class MusicPlayerScreen extends StatelessWidget {
             child: Image.asset("assets/logo.png",),
           ),
           actions: [
-            !controller.isHostMode ? ConnectionStatusWidget(false) :
+            !controller.isHostMode ? Obx(() => ConnectionStatusWidget(controller.isConnectedToSever.value)) :
             GestureDetector(
                 onTap: ()=>showModalBottomSheet(
                     context: context,
@@ -65,12 +64,12 @@ class MusicPlayerScreen extends StatelessWidget {
                 artworkBorder: BorderRadius.circular(10),
                 nullArtworkWidget: nullArtworkCustomWidgetLarge(
                     MediaQuery.of(context).size.width * 0.75),
-              ) : Obx(()=>Lottie.asset("assets/listening-music.json", animate: controller.musicPlayer.isPlaying.value, height: MediaQuery.of(context).size.width * 0.75)),
+              ) : Obx(()=>controller.isDownloadingMusic.value ? Lottie.asset("assets/downloading.json", animate: controller.musicPlayer.isPlaying.value, height: MediaQuery.of(context).size.width * 0.75) : Lottie.asset("assets/listening-music.json", animate: controller.musicPlayer.isPlaying.value, height: MediaQuery.of(context).size.width * 0.75)),
               const SizedBox(
                 height: 15,
               ),
               Text(
-                " ${controller.musicPlayer.currentlyPlayingMusicId.value != -1 ? controller.musicPlayer.currentSong?.title ?? "Unknown" : "No music"} ",
+                " ${controller.musicPlayer.currentSongTitle} ",
                 style: GoogleFonts.getFont("Poppins",
                     textStyle: const TextStyle(
                       fontWeight: FontWeight.w600,

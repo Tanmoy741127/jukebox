@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:jukebox/screens/setupClientWebsocket.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class ScanQrScreen extends StatefulWidget {
@@ -42,7 +43,7 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            Expanded(child: _buildQrView(context)),
+             _buildQrView(context),
             Positioned(
               top: 25,
               right: 20,
@@ -64,7 +65,7 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
                   mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Visibility(visible: loading, child: const SizedBox(width: 20,height: 20,child: CircularProgressIndicator(strokeWidth: 1.8,color: Colors.black,),)),
@@ -110,6 +111,9 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
     controller.scannedDataStream.listen((scanData) {
       setState(() {
         result = scanData;
+        if(result?.code != null){
+          Get.offAll(()=>SetupClientWebSocket(ipAddress: result?.code??""));
+        }
       });
     });
   }

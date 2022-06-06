@@ -1,6 +1,10 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:path_provider/path_provider.dart';
 
 class MusicPlayerController extends GetxController{
   late AudioPlayer _player;
@@ -14,6 +18,7 @@ class MusicPlayerController extends GetxController{
   List<SongModel> songs = [];
   SongModel? currentSong;
   String? currentSongUri;
+  String currentSongTitle = "No music";
 
 
 
@@ -91,6 +96,7 @@ class MusicPlayerController extends GetxController{
     currentSong = songs[index];
     currentlyPlayingMusicId.value = currentSong?.id ?? 0;
     currentlyPlayingMusicIndex = index;
+    currentSongTitle = currentSong?.title ?? "";
     currentSongUri = currentSong?.uri;
     setAudioSourceFromUri(currentSongUri??"");
   }
@@ -107,4 +113,22 @@ class MusicPlayerController extends GetxController{
     return true;
   }
 
+  Future<void> downloadMusic(String ipAddress) async {
+    var socket = await Socket.connect(ipAddress, 8080);
+    String dir = (await getTemporaryDirectory()).path;
+    File file = File('$dir/music.mp3');
+    var sink = file.openWrite();
+
+    try {
+      await socket.map(toIntList).pipe(sink);
+    } finally {
+      sink.close();
+    }
+
+    _player.setFilePath(file.path);
+}
+}
+
+List<int> toIntList(Uint8List source) {
+  return List.from(source);
 }
